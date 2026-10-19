@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Giữa HKI - Tin học 12 (Royal Edition)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark-1: #022b18; /* Deep Forest Green */
+            --bg-dark-2: #054026; /* Emerald Shadow */
+            --bg-dark-3: #085936;
+            --accent-main: #ffd700; /* Gold */
+            --accent-soft: #fceea7;
+            --accent-alert: #ff5252;
+            --accent-success: #69f0ae;
+            --text-main: #f0f4f1;
+            --text-muted: #b0c4b8;
+            --glass-bg: rgba(5, 64, 38, 0.75);
+            --glass-border: rgba(255, 215, 0, 0.25);
+            --glass-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at top right, var(--bg-dark-2), var(--bg-dark-1), #01140b);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+            display: flex; flex-wrap: wrap; justify-content: space-around; align-content: space-around;
+            opacity: 0.04; font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #fff;
+            transform: rotate(-25deg) scale(1.2); overflow: hidden;
+        }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 30px; background: rgba(2, 43, 24, 0.85);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 20px rgba(255,215,0,0.1);
+            position: relative; z-index: 10;
+            overflow-x: auto; 
+            gap: 20px;
+        }
+
+        .header-left, .header-center, .header-right {
+            white-space: nowrap; /* Cấm rớt dòng tuyệt đối */
+        }
+
+        .header-left {
+            font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-main);
+            font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .header-center {
+            font-family: 'Playfair Display', serif; font-weight: 600; font-size: 1.4rem;
+            color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .header-right {
+            font-family: 'Great Vibes', cursive; font-size: 2.2rem; color: var(--accent-main);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        .play-count-badge {
+            background: linear-gradient(135deg, var(--accent-main), #b8860b); color: #000;
+            padding: 6px 20px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.5); white-space: nowrap;
+        }
+
+        .container {
+            max-width: 850px; margin: 40px auto 30px; width: 92%;
+            position: relative; z-index: 10; flex-grow: 1;
+        }
+
+        .card {
+            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px; border: 1px solid var(--glass-border); padding: 40px;
+            box-shadow: var(--glass-shadow); position: relative; overflow: hidden;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card::before {
+            content: ''; position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.15); border-radius: 16px; pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #login-screen { text-align: center; }
+        #login-screen h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--accent-main); margin-bottom: 5px; text-shadow: 0 0 15px rgba(255,215,0,0.4); }
+        #login-screen p { font-size: 1.1rem; color: var(--text-main); margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .login-play-count {
+            display: inline-block; background: rgba(255, 215, 0, 0.1); color: var(--accent-main);
+            padding: 8px 25px; border-radius: 50px; font-weight: 600; margin-bottom: 25px; border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .input-group { margin: 20px 0; text-align: left; position: relative; }
+        .input-group label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--accent-soft); font-size: 0.95rem; }
+        .input-group input {
+            width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.4); color: #fff;
+            border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; font-size: 1rem; font-family: 'Montserrat', sans-serif;
+            box-sizing: border-box; outline: none; transition: all 0.3s;
+        }
+        .input-group input:focus { border-color: var(--accent-main); box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        #login-error { color: var(--accent-alert); font-weight: 600; font-size: 0.9rem; margin-top: 15px; display: none; }
+
+        .btn {
+            padding: 15px 35px; font-size: 1.1rem; font-weight: 600; font-family: 'Montserrat', sans-serif;
+            border: none; border-radius: 50px; cursor: pointer; transition: all 0.4s ease;
+            color: #000; letter-spacing: 1px; text-transform: uppercase; position: relative; overflow: hidden;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, var(--accent-main), #d4af37); width: 100%; margin-top: 15px; box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255, 215, 0, 0.5); }
+
+        .stats-bar {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+            font-weight: 600; background: rgba(0,0,0,0.3); padding: 12px 20px;
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem;
+        }
+        .stat-item { display: flex; align-items: center; gap: 5px; }
+        .stat-correct { color: var(--accent-success); }
+        .stat-wrong { color: var(--accent-alert); }
+        .stat-badge { background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; }
+
+        .question-text {
+            font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 600;
+            margin-bottom: 25px; line-height: 1.6; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .question-badge {
+            display: inline-block; background: var(--accent-main); color: #000;
+            padding: 4px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 15px; font-weight: 700;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 15px; }
+        .option {
+            background: rgba(8, 89, 54, 0.5); border: 1px solid rgba(255,215,0,0.2); border-radius: 12px;
+            padding: 18px 20px; font-size: 1.05rem; cursor: pointer; transition: all 0.3s; color: var(--text-main);
+            line-height: 1.5;
+        }
+        .option:hover:not(.disabled) {
+            background: rgba(8, 89, 54, 0.8); border-color: var(--accent-main); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 215, 0, 0.15);
+        }
+        .option.correct { background: rgba(0, 200, 83, 0.2) !important; border-color: #00e676 !important; color: #69f0ae; font-weight: 600; }
+        .option.wrong { background: rgba(213, 0, 0, 0.2) !important; border-color: #ff1744 !important; color: #ff5252; }
+        .option.disabled { cursor: not-allowed; opacity: 0.7; }
+
+        .bottom-actions { 
+            display: flex; margin-top: 25px; gap: 15px; align-items: stretch; min-height: 55px; 
+        }
+        
+        .explanation-box {
+            flex-grow: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px; padding: 12px 20px; display: none; text-align: left;
+            animation: fadeInUp 0.4s; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            flex-direction: column; justify-content: center;
+        }
+        .expl-title { font-size: 0.75rem; font-weight: 700; color: var(--accent-main); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
+        .expl-text { font-size: 0.95rem; color: #fff; line-height: 1.5; font-weight: 400; }
+
+        .btn-next {
+            background: #546e7a; cursor: not-allowed; display: flex; align-items: center; justify-content: center;
+            width: auto; white-space: nowrap; padding: 0 35px; opacity: 0.6; margin: 0; color: #fff;
+        }
+        .btn-next.active {
+            background: linear-gradient(135deg, var(--accent-main), #ff9100); cursor: pointer; opacity: 1; color: #000;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4); animation: pulse-gold 2s infinite;
+        }
+
+        .tf-container { display: flex; flex-direction: column; gap: 15px; }
+        .tf-row {
+            background: rgba(8, 89, 54, 0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+            padding: 18px 20px; transition: all 0.3s;
+        }
+        .tf-statement { font-size: 1.05rem; font-weight: 500; color: var(--text-main); margin-bottom: 12px; line-height: 1.5; }
+        .tf-actions { display: flex; gap: 10px; }
+        
+        .tf-btn {
+            flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3);
+            font-weight: 700; color: #bdbdbd; cursor: pointer; transition: all 0.2s; font-family: 'Montserrat', sans-serif;
+        }
+        .tf-btn:hover:not(.disabled) { border-color: var(--accent-main); color: var(--accent-main); background: rgba(255,215,0,0.1); }
+        .tf-btn.selected-correct { background: rgba(0, 200, 83, 0.2); border-color: #00e676; color: #69f0ae; }
+        .tf-btn.selected-wrong { background: rgba(213, 0, 0, 0.2); border-color: #ff1744; color: #ff5252; }
+        .tf-btn.disabled { pointer-events: none; }
+        
+        .tf-expl-inline {
+            margin-top: 12px; font-size: 0.9rem; color: var(--accent-soft); background: rgba(255, 215, 0, 0.08);
+            padding: 10px 15px; border-radius: 8px; border-left: 4px solid var(--accent-main); display: none; font-weight: 500;
+        }
+
+        #result-screen h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--accent-main); }
+        #final-score {
+            font-size: 4rem; font-weight: 700; color: var(--accent-main);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); margin: 10px 0 5px;
+        }
+        .max-score-text { font-size: 1.2rem; color: var(--text-muted); font-weight: 600; margin-bottom: 20px; }
+
+        .btn-restart { background: linear-gradient(135deg, #fceea7, #d4af37); box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3); margin-top: 20px; }
+        .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255, 215, 0, 0.5); }
+
+        @media (max-width: 768px) {
+            .header { padding: 15px; font-size: 0.9rem; justify-content: flex-start; }
+            .header-left { font-size: 1rem; }
+            .header-center { font-size: 1.1rem; }
+            .header-right { font-size: 1.8rem; }
+            .play-count-badge { display: none; } 
+            
+            .card { padding: 25px 15px; }
+            .bottom-actions { flex-direction: column; gap: 15px; }
+            .btn-next { padding: 15px; width: 100%; }
+        }
+
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="watermark" id="watermark-container"></div>
+
+    <div class="header">
+        <div class="header-left">Tin học 12</div>
+        <div class="header-center">Trường THPT Long Hải - Phước Tỉnh</div>
+        <div class="header-right">GV. Nguyễn Tiên</div>
+        <div class="play-count-badge" id="global-play-count">Lượt làm: 0</div>
+    </div>
+
+    <div class="container">
+        <!-- Màn hình Đăng nhập -->
+        <div class="card" id="login-screen">
+            <h2>ĐỀ CƯƠNG GIỮA HKI</h2>
+            <p>Bài 6. Giao tiếp và ứng xử trong không gian mạng</p>
+            <div class="login-play-count" id="login-play-count">Tổng số lượt làm bài của em: 0</div>
+            
+            <div class="input-group">
+                <label for="student-name">Họ và tên học sinh</label>
+                <input type="text" id="student-name" placeholder="Nhập họ và tên..." required>
+            </div>
+            <div class="input-group">
+                <label for="student-class">Lớp</label>
+                <input type="text" id="student-class" placeholder="Ví dụ: 12A1" required>
+            </div>
+            <div id="login-error">Vui lòng nhập đầy đủ Họ tên và Lớp để bắt đầu!</div>
+            <button class="btn btn-start" onclick="startQuiz()">Bắt đầu làm bài</button>
+        </div>
+
+        <!-- Màn hình Câu hỏi -->
+        <div class="card" id="quiz-screen" style="display: none;">
+            <div class="stats-bar">
+                <span class="stat-item" style="color: var(--accent-main);">Tiến độ: <span class="stat-badge" id="progress-text">1/13</span></span>
+                <span class="stat-item stat-correct">Đúng: <span class="stat-badge" id="correct-count">0</span></span>
+                <span class="stat-item stat-wrong">Sai: <span class="stat-badge" id="wrong-count">0</span></span>
+            </div>
+            
+            <div class="question-badge" id="question-type-badge">TRẮC NGHIỆM NHIỀU LỰA CHỌN</div>
+            <div class="question-text" id="question-text">Nội dung câu hỏi sẽ hiện ở đây</div>
+            
+            <div class="options-grid" id="options-grid"></div>
+            <div class="tf-container" id="tf-container" style="display: none;"></div>
+            
+            <div class="bottom-actions" id="bottom-actions">
+                <div id="explanation-box" class="explanation-box">
+                    <div class="expl-title">GIẢI THÍCH</div>
+                    <div class="expl-text" id="expl-text">Nội dung giải thích.</div>
+                </div>
+                <button class="btn btn-next" id="btn-next" onclick="nextQuestion()">CÂU TIẾP THEO</button>
+            </div>
+        </div>
+
+        <!-- Màn hình Kết quả -->
+        <div class="card" id="result-screen" style="display: none; text-align: center;">
+            <h2 id="result-title">Hoàn thành bài ôn tập!</h2>
+            <div id="final-score">0</div>
+            <div class="max-score-text">/ 22 Điểm (10 câu Đơn + 12 ý Đúng/Sai)</div>
+            <p id="result-message" style="font-size: 1.15rem; margin-bottom: 30px; line-height: 1.5; font-weight: 500;"></p>
+            <button class="btn btn-restart" onclick="restartQuiz()">LÀM LẠI BÀI (ĐẢO CÂU)</button>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx50-zDmCbg8FhTJzcQe-chc0uAS52Z4qmKcTguB4SFTlBd57ZlozY0wTBgF_ZPYkk/exec";
+
+        const wmContainer = document.getElementById('watermark-container');
+        for(let i=0; i<40; i++) {
+            let span = document.createElement('span');
+            span.innerText = 'GV. Nguyễn Tiên';
+            wmContainer.appendChild(span);
+        }
+
+        // Ngân hàng câu hỏi MCQ Bám sát 100% đề cương Bài 6
+        const questionBankMC = [
+            { 
+                q: "Đăng ảnh riêng tư của một người lên mạng để chế giễu khi chưa được người đó đồng ý thể hiện sự thiếu tôn trọng đối với điều gì?", 
+                options: [
+                    "Quyền tự do lựa chọn công cụ giao tiếp.", 
+                    "Quyền riêng tư và hình ảnh của người đó.", 
+                    "Quyền truy cập Internet của người đó.", 
+                    "Quyền lựa chọn nhà cung cấp dịch vụ."
+                ], 
+                answer: 1, 
+                explanation: "Hành vi đăng ảnh riêng tư mà không có sự đồng ý xâm phạm nghiêm trọng đến quyền riêng tư và quyền hình ảnh cá nhân của người khác." 
+            },
+            { 
+                q: "Khi giao tiếp trong không gian mạng, người tham gia KHÔNG nên thực hiện hành vi nào?", 
+                options: [
+                    "Tôn trọng người khác và các quy định có liên quan.", 
+                    "Lan tỏa thông tin tích cực đã được kiểm chứng.", 
+                    "Khuyến khích mọi người chia sẻ thông tin có nguồn đáng tin cậy.", 
+                    "Sử dụng lời lẽ thô tục, xúc phạm hoặc phân biệt đối xử."
+                ], 
+                answer: 3, 
+                explanation: "Sử dụng lời lẽ thô tục, xúc phạm là hành vi thiếu văn hóa và vi phạm quy tắc ứng xử trên không gian mạng." 
+            },
+            { 
+                q: "Một người nhận xét rằng bài đăng của em thiếu dẫn chứng và đưa ra lí do cụ thể. Em thấy khó chịu nhưng muốn tiếp tục trao đổi. Cách phản hồi nào phù hợp nhất?", 
+                options: [
+                    "Xem xét góp ý và phản hồi bằng dẫn chứng, lời lẽ lịch sự.", 
+                    "Đề nghị người đó ngừng bình luận vì đây là trang cá nhân.", 
+                    "Nhờ bạn bè bình luận ủng hộ để bảo vệ quan điểm của mình.", 
+                    "Xóa nhận xét rồi đăng lại bài viết với nội dung như trước."
+                ], 
+                answer: 0, 
+                explanation: "Trong giao tiếp, việc tiếp thu ý kiến trái chiều một cách văn minh, lịch sự và dùng minh chứng để trao đổi là cách ứng xử đúng đắn." 
+            },
+            { 
+                q: "Hoạt động nào sau đây là ví dụ của hình thức giao tiếp trực tiếp qua mạng?", 
+                options: [
+                    "Gửi tập tin đính kèm qua hòm thư điện tử cá nhân.", 
+                    "Thực hiện cuộc gọi video nhóm trên ứng dụng mạng.", 
+                    "Đọc lại bài viết hướng dẫn trên trang web tin tức.", 
+                    "Đăng tải bài viết chia sẻ quan điểm lên trang blog."
+                ], 
+                answer: 1, 
+                explanation: "Cuộc gọi video nhóm cho phép tương tác tức thời (real-time), là hình thức giao tiếp trực tiếp qua không gian mạng." 
+            },
+            { 
+                q: "Hành vi nào sau đây KHÔNG vi phạm pháp luật trên không gian mạng?", 
+                options: [
+                    "Đăng tải video hài hước mà không có sự cho phép của người trong video.", 
+                    "Tải phần mềm nguồn mở từ trang web đáng tin cậy để sử dụng.", 
+                    "Xâm nhập trái phép vào hệ thống thông tin của một tổ chức.", 
+                    "Sử dụng tài khoản mạng xã hội của người khác mà không có sự đồng ý."
+                ], 
+                answer: 1, 
+                explanation: "Phần mềm nguồn mở (open source) cho phép người dùng tự do tải về và sử dụng hợp pháp theo giấy phép tương ứng." 
+            },
+            { 
+                q: "Một người dùng hồ sơ giả để kết bạn và xây dựng lòng tin với người khác. Tình huống này cho thấy hạn chế nào của giao tiếp trực tuyến?", 
+                options: [
+                    "Khó đánh giá danh tính và độ tin cậy của người giao tiếp.", 
+                    "Khó lựa chọn thời điểm phù hợp để gửi tin nhắn.", 
+                    "Khó tìm công cụ hỗ trợ trò chuyện bằng âm thanh.", 
+                    "Khó lưu trữ nội dung của các cuộc trao đổi."
+                ], 
+                answer: 0, 
+                explanation: "Tính ẩn danh hoặc nặc danh trên mạng khiến chúng ta rất khó xác thực danh tính thật của người đang tương tác." 
+            },
+            { 
+                q: "Trong nhóm học tập, một bạn bị chế giễu vì trả lời sai. Em muốn giúp bạn mà không làm nội dung chế giễu lan rộng. Cách nào phù hợp nhất?", 
+                options: [
+                    "Đề nghị dừng chế giễu và nhắn riêng để động viên bạn.", 
+                    "Chia sẻ ảnh chụp sang nhóm khác để xin ý kiến xử lí.", 
+                    "Đăng bài công khai nêu tên những người đã chế giễu bạn.", 
+                    "Khuyên bạn ngừng phát biểu để tránh bị chế giễu thêm."
+                ], 
+                answer: 0, 
+                explanation: "Góp ý nhẹ nhàng để dừng sự việc và động viên cá nhân giúp giải quyết vấn đề mà không làm leo thang mâu thuẫn." 
+            },
+            { 
+                q: "Đặc điểm nào sau đây thể hiện rõ nhất khả năng vượt qua rào cản về khoảng cách địa lý của giao tiếp trực tuyến?", 
+                options: [
+                    "Có thể giảm chi phí đi lại khi trao đổi từ xa.", 
+                    "Có thể kết nối thêm người có chung sở thích.", 
+                    "Có thể trao đổi từ nhiều địa điểm khi có điều kiện kết nối.", 
+                    "Có thể lựa chọn tin nhắn, thư điện tử hoặc cuộc gọi video."
+                ], 
+                answer: 2, 
+                explanation: "Khả năng trao đổi từ nhiều địa điểm khác nhau miễn là có Internet chính là minh chứng rõ nhất cho việc vượt qua rào cản địa lý." 
+            },
+            { 
+                q: "Khi làm bài thuyết trình, An sử dụng công cụ AI và được yêu cầu tải lên danh sách học sinh gồm họ tên, số điện thoại và địa chỉ nhà để công cụ tạo ví dụ phù hợp. An nên làm gì?", 
+                options: [
+                    "Tải toàn bộ danh sách lên vì chỉ dùng cho mục đích học tập.", 
+                    "Chỉ tải thông tin của những bạn thân mà không cần hỏi ý kiến.", 
+                    "Chia sẻ danh sách lên nhóm công khai để mọi người cùng sử dụng.", 
+                    "Dùng dữ liệu giả định, không tải thông tin cá nhân của các bạn lên công cụ."
+                ], 
+                answer: 3, 
+                explanation: "Tuyệt đối không đưa dữ liệu cá nhân nhạy cảm lên các công cụ AI để tránh rủi ro rò rỉ dữ liệu. Dùng dữ liệu giả định là giải pháp an toàn." 
+            },
+            { 
+                q: "Một bạn trong nhóm học tập nhắn rằng đang rất lo lắng vì kết quả học tập giảm sút. Cách phản hồi nào thể hiện sự đồng cảm và phù hợp nhất?", 
+                options: [
+                    "Lắng nghe, hỏi thêm về khó khăn của bạn và cùng tìm cách hỗ trợ.", 
+                    "Khuyên bạn không nên buồn vì nhiều người có kết quả thấp hơn.", 
+                    "Chuyển sang kể thành tích của mình để bạn có động lực.", 
+                    "Chụp tin nhắn đăng lên nhóm lớp để mọi người cùng nhận xét."
+                ], 
+                answer: 0, 
+                explanation: "Sự đồng cảm thể hiện qua việc chân thành lắng nghe và đề xuất cùng nhau tìm giải pháp tháo gỡ khó khăn." 
+            }
+        ];
+
+        // Ngân hàng câu hỏi True/False Bám sát 100% đề cương Bài 6
+        const questionBankTF = [
+            {
+                q: "Sau một lần bất đồng với bạn cùng lớp, Nam đăng bài có lời lẽ xúc phạm bạn trên trang cá nhân. Một lúc sau, Nam bình tĩnh lại và xóa bài viết. Tuy nhiên, một số người đã chụp màn hình và chuyển tiếp nội dung đó. Nam cho rằng mình đã xóa bài nên không cần xin lỗi hay giải thích thêm với người bị nhắc đến.",
+                statements: [
+                    { text: "a) Xóa bài viết bảo đảm mọi bản sao của nội dung đó cũng biến mất trên mạng.", answer: false, expl: "Sai. Nội dung có thể đã bị sao chụp hoặc lưu trữ trên máy chủ khác trước khi bạn xóa." },
+                    { text: "b) Nội dung đã đăng có thể được người khác lưu lại và ảnh hưởng đến uy tín của Nam.", answer: true, expl: "Đúng. Dấu vết số (Digital Footprint) rất khó tẩy xóa hoàn toàn và sẽ ảnh hưởng uy tín." },
+                    { text: "c) Nam nên xin lỗi người bị xúc phạm và đề nghị những người đã chia sẻ ngừng phát tán nội dung.", answer: true, expl: "Đúng. Đây là cách giải quyết có trách nhiệm và thấu tình đạt lý." },
+                    { text: "d) Nam không cần chịu trách nhiệm về lời nói của mình vì bài viết đã được xóa.", answer: false, expl: "Sai. Cá nhân phải chịu trách nhiệm về hành vi của mình trên không gian mạng dù đã xóa bài." }
+                ]
+            },
+            {
+                q: "Nhóm của Mai chuẩn bị nộp bài thuyết trình nhưng Tuấn chưa hoàn thành phần việc được giao. Một số thành viên đề nghị phê bình Tuấn ngay trong nhóm lớp. Mai trao đổi riêng và biết Tuấn đang gặp khó khăn trong gia đình, thời gian học tập bị ảnh hưởng. Mai đề xuất cả nhóm điều chỉnh phân công, hỗ trợ Tuấn và thống nhất lại thời hạn hoàn thành.",
+                statements: [
+                    { text: "a) Việc tìm hiểu nguyên nhân trước khi nhận xét thể hiện sự thấu hiểu đối với Tuấn.", answer: true, expl: "Đúng. Trong giao tiếp, thấu hiểu hoàn cảnh giúp giải quyết vấn đề hiệu quả hơn." },
+                    { text: "b) Mai nên đăng toàn bộ hoàn cảnh gia đình của Tuấn lên nhóm lớp để mọi người thông cảm, dù Tuấn chưa đồng ý.", answer: false, expl: "Sai. Việc tiết lộ thông tin cá nhân của người khác khi chưa được phép là vi phạm quyền riêng tư." },
+                    { text: "c) Nhóm có thể điều chỉnh phân công phù hợp nhưng vẫn cần thống nhất trách nhiệm và thời hạn hoàn thành.", answer: true, expl: "Đúng. Hỗ trợ bạn bè nhưng vẫn phải đảm bảo kỷ luật và tiến độ chung của nhóm." },
+                    { text: "d) Tôn trọng Tuấn có nghĩa là các thành viên không được góp ý về phần việc bạn chưa hoàn thành.", answer: false, expl: "Sai. Vẫn có thể góp ý mang tính xây dựng mà không xúc phạm hay miệt thị cá nhân." }
+                ]
+            },
+            {
+                q: "Gần đây, Bình thường thức khuya để xem video và trả lời bình luận trên mạng xã hội. Bình bắt đầu buồn ngủ trong giờ học, ít tham gia hoạt động cùng bạn bè và thường xuyên trì hoãn bài tập. Khi được góp ý, Bình cho rằng càng dành nhiều thời gian trên mạng thì càng chứng tỏ mình có năng lực số tốt. Bình cũng lo rằng giảm thời gian sử dụng sẽ khiến mình bỏ lỡ các thông tin hữu ích.",
+                statements: [
+                    { text: "a) Những biểu hiện trên cho thấy thói quen sử dụng mạng xã hội đang ảnh hưởng đến việc học và sinh hoạt của Bình.", answer: true, expl: "Đúng. Đây là dấu hiệu của việc lạm dụng hoặc nghiện mạng xã hội." },
+                    { text: "b) Dành nhiều thời gian trên mạng xã hội là căn cứ đủ để khẳng định Bình có năng lực số tốt.", answer: false, expl: "Sai. Năng lực số là khả năng sử dụng công nghệ an toàn, hiệu quả, không phải là thời gian dùng mạng." },
+                    { text: "c) Bình nên sắp xếp thời gian sử dụng mạng xã hội, bảo đảm giấc ngủ và dành thời gian cho các hoạt động ngoài đời.", answer: true, expl: "Đúng. Cân bằng giữa thế giới ảo và đời thực là kỹ năng sống cần thiết." },
+                    { text: "d) Muốn tiếp cận thông tin hữu ích, Bình cần đọc và phản hồi mọi thông báo ngay khi nhận được.", answer: false, expl: "Sai. Bị lệ thuộc vào thông báo (FOMO - sợ bỏ lỡ) sẽ làm giảm sự tập trung vào công việc quan trọng." }
+                ]
+            }
+        ];
+
+        let currentQuestions = [];
+        let currentIdx = 0;
+        let scoreCount = 0; 
+        let wrongCountDisplay = 0; 
+        
+        let answeredMC = false;
+        let answeredTFCount = 0; 
+
+        let studentInfo = { name: '', class: '' };
+        
+        // Quản lý số lượt chơi bài 6
+        let playCount = localStorage.getItem('gvTien_playCount_bai6_v1') || 0;
+        playCount = parseInt(playCount);
+        
+        document.getElementById('global-play-count').innerText = `Lượt làm: ${playCount}`;
+        document.getElementById('login-play-count').innerText = `Tổng số lượt làm bài của em: ${playCount}`;
+
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            
+            if (type === 'correct') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1600, now + 0.1);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
+            } else {
+                osc.type = 'square'; osc.frequency.setValueAtTime(250, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+        }
+
+        function shuffleArray(array) {
+            let shuffled = array.slice();
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startQuiz() {
+            const nameIp = document.getElementById('student-name').value.trim();
+            const classIp = document.getElementById('student-class').value.trim();
+            const errEl = document.getElementById('login-error');
+            
+            if(!nameIp || !classIp) {
+                errEl.style.display = 'block';
+                return;
+            }
+            errEl.style.display = 'none';
+            studentInfo.name = nameIp; studentInfo.class = classIp;
+
+            initAudio(); 
+            playCount++;
+            localStorage.setItem('gvTien_playCount_bai6_v1', playCount);
+            
+            document.getElementById('global-play-count').innerText = `Lượt làm: ${playCount}`;
+            document.getElementById('login-play-count').innerText = `Tổng số lượt làm bài của em: ${playCount}`;
+
+            // Lượt 1: Theo thứ tự. Lượt > 1: Đảo câu hỏi và đáp án
+            let mcList = questionBankMC.map(q => ({...q, type: 'mc'}));
+            let tfList = questionBankTF.map(q => ({...q, type: 'tf'}));
+
+            if (playCount > 1) {
+                mcList.forEach(q => {
+                    let opts = q.options.map((text, idx) => ({text, isCorrect: idx === q.answer}));
+                    opts = shuffleArray(opts);
+                    q.options = opts.map(o => o.text);
+                    q.answer = opts.findIndex(o => o.isCorrect);
+                });
+                mcList = shuffleArray(mcList);
+                tfList = shuffleArray(tfList);
+            }
+            
+            currentQuestions = [...mcList, ...tfList];
+            currentIdx = 0; scoreCount = 0; wrongCountDisplay = 0;
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const qData = currentQuestions[currentIdx];
+            
+            document.getElementById('progress-text').innerText = `${currentIdx + 1}/13`;
+            document.getElementById('correct-count').innerText = scoreCount;
+            document.getElementById('wrong-count').innerText = wrongCountDisplay;
+            
+            const badge = document.getElementById('question-type-badge');
+            const qText = document.getElementById('question-text');
+            const explBox = document.getElementById('explanation-box');
+            const btnNext = document.getElementById('btn-next');
+            const mcGrid = document.getElementById('options-grid');
+            const tfContainer = document.getElementById('tf-container');
+            
+            explBox.style.display = 'none';
+            btnNext.classList.remove('active');
+            btnNext.disabled = true;
+
+            if (qData.type === 'mc') {
+                answeredMC = false;
+                badge.innerText = "PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN";
+                qText.innerText = `Câu ${currentIdx + 1}: ${qData.q}`;
+                
+                tfContainer.style.display = 'none';
+                mcGrid.style.display = 'flex';
+                mcGrid.innerHTML = '';
+
+                const prefixes = ['A', 'B', 'C', 'D'];
+                qData.options.forEach((opt, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'option';
+                    div.innerHTML = `<strong style="color: var(--accent-main); margin-right: 8px;">${prefixes[index]}.</strong> ${opt}`;
+                    div.onclick = () => checkAnswerMC(index, div, qData);
+                    mcGrid.appendChild(div);
+                });
+            } else {
+                answeredTFCount = 0;
+                badge.innerText = "PHẦN II: TRẮC NGHIỆM ĐÚNG/SAI";
+                qText.innerText = `Câu ${currentIdx + 1}: ${qData.q}`;
+                
+                mcGrid.style.display = 'none';
+                tfContainer.style.display = 'flex';
+                tfContainer.innerHTML = '';
+                
+                qData.statements.forEach((stmt, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'tf-row';
+                    row.innerHTML = `
+                        <div class="tf-statement">${stmt.text}</div>
+                        <div class="tf-actions">
+                            <button class="tf-btn btn-true" onclick="checkAnswerTF(${index}, true, this.parentElement)">ĐÚNG</button>
+                            <button class="tf-btn btn-false" onclick="checkAnswerTF(${index}, false, this.parentElement)">SAI</button>
+                        </div>
+                        <div class="tf-expl-inline" id="tf-expl-${index}"></div>
+                    `;
+                    tfContainer.appendChild(row);
+                });
+            }
+        }
+
+        function checkAnswerMC(selectedIndex, optElement, qData) {
+            if (answeredMC) return;
+            answeredMC = true;
+
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            if (selectedIndex === qData.answer) {
+                optElement.classList.add('correct');
+                playSound('correct');
+                scoreCount++;
+            } else {
+                optElement.classList.add('wrong');
+                options[qData.answer].classList.add('correct'); 
+                playSound('wrong');
+                wrongCountDisplay++;
+                
+                document.getElementById('expl-text').innerText = qData.explanation;
+                document.getElementById('explanation-box').style.display = 'flex';
+            }
+
+            document.getElementById('correct-count').innerText = scoreCount;
+            document.getElementById('wrong-count').innerText = wrongCountDisplay;
+
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.classList.add('active'); nextBtn.disabled = false;
+        }
+
+        function checkAnswerTF(stmtIndex, userChoice, actionsContainer) {
+            const btns = actionsContainer.querySelectorAll('.tf-btn');
+            if (btns[0].classList.contains('disabled')) return; 
+            
+            const qData = currentQuestions[currentIdx];
+            const stmt = qData.statements[stmtIndex];
+            const explDiv = document.getElementById(`tf-expl-${stmtIndex}`);
+            
+            btns.forEach(b => b.classList.add('disabled'));
+            const clickedBtn = userChoice ? btns[0] : btns[1];
+            
+            if (userChoice === stmt.answer) {
+                clickedBtn.classList.add('selected-correct');
+                playSound('correct');
+                scoreCount++;
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+                playSound('wrong');
+                wrongCountDisplay++;
+                explDiv.innerText = "✨ " + stmt.expl;
+                explDiv.style.display = 'block';
+            }
+            
+            document.getElementById('correct-count').innerText = scoreCount;
+            document.getElementById('wrong-count').innerText = wrongCountDisplay;
+            
+            answeredTFCount++;
+            if (answeredTFCount === 4) {
+                const nextBtn = document.getElementById('btn-next');
+                nextBtn.classList.add('active'); nextBtn.disabled = false;
+            }
+        }
+
+        function nextQuestion() {
+            const btnNext = document.getElementById('btn-next');
+            if (btnNext.disabled) return;
+            
+            currentIdx++;
+            if (currentIdx < currentQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+
+            document.getElementById('final-score').innerText = scoreCount;
+            
+            const msgEl = document.getElementById('result-message');
+            const percent = scoreCount / 22; // Max 22 điểm (10 đơn + 12 ý)
+
+            if (percent === 1) {
+                msgEl.innerText = "Thật tuyệt vời! Em ứng xử trên không gian mạng vô cùng chuẩn mực và xuất sắc. Cô Tiên rất tự hào!";
+                msgEl.style.color = "var(--accent-success)";
+            } else if (percent >= 0.8) {
+                msgEl.innerText = "Rất tốt! Em hiểu rõ các quy tắc giao tiếp. Chỉ cần chú ý một vài chi tiết nhỏ để hoàn thiện hơn nhé.";
+                msgEl.style.color = "var(--accent-main)";
+            } else if (percent >= 0.5) {
+                msgEl.innerText = "Mức độ Khá. Hãy xem lại kỹ những lời giải thích ở các câu sai để nắm vững cách ứng xử hơn nhé.";
+                msgEl.style.color = "#ffb74d";
+            } else {
+                msgEl.innerText = "Kết quả chưa như ý. Em hãy đọc lại đề cương và làm lại bài để củng cố kiến thức nhé!";
+                msgEl.style.color = "var(--accent-alert)";
+            }
+
+            sendDataToSheets(studentInfo.name, studentInfo.class, scoreCount, 22, playCount);
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('student-name').value = studentInfo.name;
+            document.getElementById('student-class').value = studentInfo.class;
+        }
+
+        function sendDataToSheets(name, className, points, total, attempt) {
+            if (GOOGLE_SCRIPT_URL === "YOUR_WEB_APP_URL_HERE") return; 
+            const url = `${GOOGLE_SCRIPT_URL}?name=${encodeURIComponent(name)}&class=${encodeURIComponent(className)}&score=${points}&total=${total}&playCount=${attempt}`;
+            fetch(url, { mode: 'no-cors' })
+                .then(() => console.log("Data synced securely."))
+                .catch(err => console.error("Sync error: ", err));
+        }
+    </script>
+</body>
+</html>
